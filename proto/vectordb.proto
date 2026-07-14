@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package vectordb;
+option go_package = "vector-engine/proto";
+
+service VectorService {
+  rpc Insert(InsertRequest) returns (InsertResponse);
+  rpc Query(QueryRequest) returns (QueryResponse);
+  rpc GetStats(StatsRequest) returns (StatsResponse);
+}
+
+message InsertRequest {
+  string id = 1;
+  repeated float vector = 2;
+}
+
+message InsertResponse {
+  bool success = 1;
+  string message = 2;
+  string routed_to_shard = 3;
+  int64 execution_time_ns = 4;
+}
+
+message QueryRequest {
+  repeated float vector = 1;
+  int32 k = 2;
+}
+
+message VectorMatch {
+  string id = 1;
+  float score = 2;
+}
+
+message QueryResponse {
+  repeated VectorMatch matches = 1;
+  int64 execution_time_ns = 2;
+  string routed_to_shard = 3;
+  string index_type = 4;
+}
+
+message StatsRequest {}
+
+message ShardStats {
+  string node_id = 1;
+  int64 vector_count = 2;
+  int32 max_layer = 3;
+  int32 ef_search = 4;
+  string status = 5;
+}
+
+message StatsResponse {
+  int64 total_vectors = 1;
+  int32 worker_pool_size = 2;
+  string index_type = 3;
+  int32 max_layer = 4;
+  int32 ef_search = 5;
+  repeated ShardStats shards = 6;
+}
