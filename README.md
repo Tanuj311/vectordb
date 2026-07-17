@@ -2,7 +2,6 @@
 
 ![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)
 ![Build Status](https://github.com/YOUR_USERNAME/vectordb/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 VectorDB is a pure-Go, high-performance distributed vector database. It implements the **Hierarchical Navigable Small World (HNSW)** algorithm from scratch for fast Approximate Nearest Neighbor (ANN) search, and distributes the workload across multiple nodes using a consistent-hashing gRPC architecture.
 
