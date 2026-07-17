@@ -1,0 +1,18 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test/Benchmark Data
+*.zip
+siftsmall/
+glove.6B/
+
+# Protobuf tools
+protoc_dir/
+
+# OS/IDE
+.DS_Store
+.idea/
+.vscode/
