@@ -69,7 +69,14 @@ type coordinatorServer struct {
 	pb.UnimplementedVectorServiceServer
 	ring      *cluster.HashRing
 	clients   map[string]pb.VectorServiceClient
+	conns     []*grpc.ClientConn
 	shardUrls []string
+}
+
+func (c *coordinatorServer) Close() {
+	for _, conn := range c.conns {
+		conn.Close()
+	}
 }
 
 func newCoordinatorServer(shards string) *coordinatorServer {
@@ -91,6 +98,7 @@ func newCoordinatorServer(shards string) *coordinatorServer {
 			log.Fatalf("Failed to dial shard %s: %v", shardUrl, err)
 		}
 		c.clients[shardUrl] = pb.NewVectorServiceClient(conn)
+		c.conns = append(c.conns, conn)
 	}
 	return c
 }
@@ -150,7 +158,7 @@ func (c *coordinatorServer) Query(ctx context.Context, req *pb.QueryRequest) (*p
 	return &pb.QueryResponse{
 		Matches:         allMatches[:k],
 		ExecutionTimeNs: maxExecTime,
-		RoutedToShard:   c.shardUrls[len(req.Vector) % len(c.shardUrls)], // deterministic pseudo-random for UI
+		RoutedToShard:   strings.Join(c.shardUrls, ","), // Scatter-gather queries all shards
 		IndexType:       "hnsw",
 	}, nil
 }
@@ -228,6 +236,7 @@ func main() {
 			log.Fatalf("Coordinator mode requires --shards flag")
 		}
 		coord := newCoordinatorServer(*shards)
+		defer coord.Close()
 		pb.RegisterVectorServiceServer(s, coord)
 		log.Printf("Coordinator gRPC listening at %v, routing to %s", lis.Addr(), *shards)
 

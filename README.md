@@ -91,7 +91,12 @@ go test -v ./...
 
 ### 2. Start the Distributed Cluster
 
-We need to spin up the independent shard nodes and the coordinator. We've included a PowerShell script to start a local 3-shard cluster automatically:
+We need to spin up the independent shard nodes and the coordinator. We've included startup scripts to launch a local 3-shard cluster automatically:
+
+**On Linux/macOS:**
+```bash
+./start_cluster.sh
+```
 
 **On Windows:**
 ```powershell
